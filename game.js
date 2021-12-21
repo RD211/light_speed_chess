@@ -207,8 +207,10 @@ game.prototype.addPlayer = function(p) {
     this.playerB = p;
     let currentMoveCount = this.moveCount;
     setTimeout(()=>{
-      if(this.moveCount == currentMoveCount)
-        this.performMove(this.currentMove,this.getAllMoves()[0]);
+      if(this.moveCount == currentMoveCount){
+        let moves = this.getAllMoves();
+        this.performMove(this.currentMove,moves[Math.random()*moves.length]);
+      }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
     return "Black";
   }
