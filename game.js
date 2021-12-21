@@ -209,7 +209,7 @@ game.prototype.addPlayer = function(p) {
     setTimeout(()=>{
       if(this.moveCount == currentMoveCount){
         let moves = this.getAllMoves();
-        this.performMove(this.currentMove,moves[Math.random()*moves.length]);
+        this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
       }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
     return "Black";
@@ -332,7 +332,8 @@ game.prototype.performMove = function(con, move) {
     setTimeout(()=>{
       if(this.moveCount == currentMoveCount){
         let moves = this.getAllMoves();
-        this.performMove(this.currentMove,moves[Math.random()*moves.length]);
+        console.log(moves[Math.floor(Math.random()*moves.length)]);
+        this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
       }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
 
