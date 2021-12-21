@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+.friendly_grave{
+  width: 300;
+  height: 300;
+  margin: 0;
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  text-align: center;
+  background-color: darkblue;
+}
+.enemy_grave{
+  width: 300;
+  height: 300;
+  margin: 0;
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  text-align: center;
+  background-color: whitesmoke;
+}
+.background_image{
+    opacity: 0.3;
+}
+#chess_game {
+    background-color: green;
+    color: green;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+     transform: translate(-50%, -50%);
+    text-align: center;
+}
+.h1{
+    font-family: 'Roboto';
+    font-weight: bold;
+}
+#info_you{
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    color:#009fda;
+}
+#info_him{
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    color:#009fda;
+}
+.info_you{
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    color:#009fda;
+}
+.info_him{
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    color:#009fda;
+}
+</style>
+<body>
+    <div class = "friendly_grave">
+        <img class = "background_image" src = "images/logo.png" width="300" height="300"/>
+    </div>
+
+    <div class = "enemy_grave">
+        <img class = "background_image" src = "images/logo.png" width="300" height="300"/>
+
+    </div>
+    <canvas id="chess_game" width="600" height="600"></canvas>
+      <div id = "info_you" class = "info_you">
+            <h1>00:05</h1>
+      </div>
+      <div id = "info_him" class = "info_him">
+        <h1>00:05</h1>
+  </div>
+  <script type="module" src = "javascripts/game_screen.js"></script>
+</body>
+</html>
