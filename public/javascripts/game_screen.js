@@ -43,7 +43,7 @@ function colorOfPiece(piece)
 //#endregion
 
 // We consider every move as being from a black object(top of board)
-let checkPawn = function(board, fx, fy, tx, ty){
+let checkPawn = function(board, fx, fy, tx, ty, moves){
   if(fy>=ty) return false;
   let dest = board[ty][tx];
   let colorFrom = colorOfPiece(board[fy][fx]);
@@ -62,12 +62,21 @@ let checkPawn = function(board, fx, fy, tx, ty){
   {
     if(ty-fy==1 && dest != empty)
       return true;
+    if(ty-fy==1 && typeof moves !== 'undefined' && moves.length>0){
+      let move = moves[0]
+      if(colorFrom == 'w') move = {fx:7-move.fx, fy: 7-move.fy, tx: 7-move.tx, ty: 7-move.ty}
+      if(move.fy == ty+1 && move.fx == tx && 
+      (board[move.ty][move.tx] == wPieton ||
+        board[move.ty][move.tx] == bPieton) && 
+        colorOfPiece(board[move.ty][move.tx])!=colorFrom)
+        return true; //change to string 'en pessant'; also check because it doesnt work
+    }
   }
   return false;
 };
 
 
-let checkCal = function(board, fx, fy, tx, ty){
+let checkCal = function(board, fx, fy, tx, ty, moves){
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
@@ -77,7 +86,7 @@ let checkCal = function(board, fx, fy, tx, ty){
   return JSON.stringify([dx,dy].sort()) == JSON.stringify([1,2]);
 };
 
-let checkNebun = function(board, fx, fy, tx, ty){
+let checkNebun = function(board, fx, fy, tx, ty, moves){
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
@@ -93,7 +102,7 @@ let checkNebun = function(board, fx, fy, tx, ty){
   return true;
 };
 
-let checkTura = function(board, fx, fy, tx, ty){
+let checkTura = function(board, fx, fy, tx, ty, moves){
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
@@ -109,15 +118,31 @@ let checkTura = function(board, fx, fy, tx, ty){
   }
   return true;
 };
-let checkRegina = function(board, fx, fy, tx, ty) {
+let checkRegina = function(board, fx, fy, tx, ty, moves) {
   return checkNebun(board,fx,fy,tx,ty) || checkTura(board,fx,fy,tx,ty);
 };
 
-let checkKing = function(board, fx,fy,tx,ty) {
+let checkKing = function(board, fx,fy,tx,ty,moves) {
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
   if(colorTo == colorFrom) return false;
+
+  //TODO: MUST CHECK IF KING EVER MOVED OR ROOK
+  if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)<=3 && Math.abs(fx-tx)>=2)
+  {
+    let direction = (fx>tx)?-1:1;
+    if(board[ty][fx+direction]!=empty) return false;
+    if(board[ty][fx+direction+direction]!=empty) return false;
+    if(direction + tx <= 7 && direction+tx >= 0)
+    {
+      if((board[ty][direction+tx] == wTurn ||
+        board[ty][direction+tx] == bTurn)&&
+        colorOfPiece(board[ty][direction+tx]) == colorFrom){
+          return true;
+        }
+    }
+  }
   return Math.abs(fx-tx) <= 1 && Math.abs(fy-ty) <= 1;
 };
 let validMoveChecker = {
@@ -176,7 +201,7 @@ function isSah(board) {
     return null;
   }
   
-  
+  //TODO:ADD MOVES SEND BETWEEN
 function flipTable(chessBoard){
     let newBoard = JSON.parse(JSON.stringify(chessBoard));
     return newBoard.map(row=>row.reverse()).reverse();
@@ -232,6 +257,7 @@ let gameAborted = false;
 let lastMove = null;
 let moveCount = 0;
 let amIWhite = false;
+let allMoves = [];
 setInterval(()=>{
     if(isCheckMate)
     {
@@ -268,12 +294,12 @@ setInterval(()=>{
             new Audio("../sounds/tock.wav").play();
 
             //Aici trebuia sa fie seconds in loc de 0 dar din ceva motiv asta merge? nu inteleg
-            document.getElementById("info_you").innerHTML = Math.ceil((0-(Date.now()-last_turn_time)/1000)).toString();
+            document.getElementById("info_you").innerHTML = Math.ceil((5-(Date.now()-last_turn_time)/1000)).toString();
             document.getElementById("info_him").innerHTML = "";
         }
         else
         {
-            document.getElementById("info_him").innerHTML = Math.ceil((0-(Date.now()-last_turn_time)/1000)).toString();
+            document.getElementById("info_him").innerHTML = Math.ceil((5-(Date.now()-last_turn_time)/1000)).toString();
             document.getElementById("info_you").innerHTML = "";
         }
     }
@@ -293,6 +319,7 @@ socket.onmessage = function (event) {
     chessBoard = data['board'];
     isCheckMate = data['isCheckMate'];
     lastMove = data['last_move'];
+    allMoves = data['moves'];
     if(isCheckMate && myTurn)
     {
       new Audio('../sounds/lose.wav').play();
@@ -361,7 +388,7 @@ canvas.addEventListener("click", (e)=>{
             for(let j = 0;j<8;j++)
             {
 
-                if(validMoveChecker[chessBoard[y][x]](flipTable(chessBoard), 7-x, 7-y, 7-j, 7-i))
+                if(validMoveChecker[chessBoard[y][x]](flipTable(chessBoard), 7-x, 7-y, 7-j, 7-i, allMoves))
                 {
                     console.log("considering " +j+" "+i);
                     let tempBoard = JSON.parse(JSON.stringify(chessBoard));

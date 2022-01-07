@@ -55,10 +55,10 @@ wss.on("connection", function connection(ws) {
     const oMsg = JSON.parse(message.toString());
 
     const gameObj = websockets[con["id"]];
-
-    if(gameObj.isValidMove(con,oMsg))
+    let isValid = gameObj.isValidMove(con,oMsg)
+    if(isValid != false)
     {
-      gameObj.performMove(con, oMsg);
+      gameObj.performMove(con, oMsg, isValid);
     }
     else
     {

@@ -24,7 +24,7 @@ function colorOfPiece(piece)
 // We consider every move as being from a black object(top of board)
 
 
-checkPawn = function(board, fx, fy, tx, ty){
+checkPawn = function(board, fx, fy, tx, ty, moves){
   if(fy>=ty) return false;
   let dest = board[ty][tx];
   let colorFrom = colorOfPiece(board[fy][fx]);
@@ -43,11 +43,20 @@ checkPawn = function(board, fx, fy, tx, ty){
   {
     if(ty-fy==1 && dest != empty)
       return true;
+    if(ty-fy==1 && typeof moves !== 'undefined' && moves.length>0){
+      let move = moves[0]
+      if(colorFrom == 'w') move = {fx:7-move.fx, fy: 7-move.fy, tx: 7-move.tx, ty: 7-move.ty}
+      if(move.fy == ty+1 && move.fx == tx && 
+      (board[move.ty][move.tx] == wPieton ||
+        board[move.ty][move.tx] == bPieton) && 
+        colorOfPiece(board[move.ty][move.tx])!=colorFrom)
+        return 'passant';
+    }
   }
   return false;
 };
 
-checkCal = function(board, fx, fy, tx, ty){
+checkCal = function(board, fx, fy, tx, ty, moves){
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
@@ -57,7 +66,7 @@ checkCal = function(board, fx, fy, tx, ty){
   return JSON.stringify([dx,dy].sort()) == JSON.stringify([1,2]);
 };
 
-checkNebun = function(board, fx, fy, tx, ty){
+checkNebun = function(board, fx, fy, tx, ty, moves){
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
@@ -73,7 +82,7 @@ checkNebun = function(board, fx, fy, tx, ty){
   return true;
 };
 
-checkTura = function(board, fx, fy, tx, ty){
+checkTura = function(board, fx, fy, tx, ty, moves){
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
@@ -89,15 +98,31 @@ checkTura = function(board, fx, fy, tx, ty){
   }
   return true;
 };
-checkRegina = function(board, fx, fy, tx, ty) {
+checkRegina = function(board, fx, fy, tx, ty, moves) {
   return checkNebun(board,fx,fy,tx,ty) || checkTura(board,fx,fy,tx,ty);
 };
 
-checkKing = function(board, fx,fy,tx,ty) {
+checkKing = function(board, fx,fy,tx,ty,moves) {
   let colorFrom = colorOfPiece(board[fy][fx]);
   let colorTo = colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == empty)  return false;
   if(colorTo == colorFrom) return false;
+
+  //TODO: MUST CHECK IF KING EVER MOVED OR ROOK
+  if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)<=3 && Math.abs(fx-tx)>=2)
+  {
+    let direction = (fx>tx)?-1:1;
+    if(board[ty][fx+direction]!=empty) return false;
+    if(board[ty][fx+direction+direction]!=empty) return false;
+    if(direction + tx <= 7 && direction+tx >= 0)
+    {
+      if((board[ty][direction+tx] == wTurn ||
+        board[ty][direction+tx] == bTurn)&&
+        colorOfPiece(board[ty][direction+tx]) == colorFrom){
+          return 'rocada';
+        }
+    }
+  }
   return Math.abs(fx-tx) <= 1 && Math.abs(fy-ty) <= 1;
 };
 
@@ -168,7 +193,7 @@ const game = function(gameID) {
   this.playerA = null;
   this.playerB = null;
   this.board = [
-    [bTurn, bCal, bNebun, bRegina, bRege, bNebun, bCal, bTurn],
+    [bTurn, bCal, bNebun, bRege, bRegina, bNebun, bCal, bTurn],
     Array(8).fill(bPieton),
     Array(8).fill(empty),
     Array(8).fill(empty),
@@ -183,7 +208,7 @@ const game = function(gameID) {
   this.extraTimeB = 0;
   this.moveCount = 0;
   this.chess = null;
-  this.last_move = null;
+  this.moves = [];
 };
 
 game.prototype.hasTwoConnectedPlayers = function() {
@@ -209,6 +234,7 @@ game.prototype.addPlayer = function(p) {
     setTimeout(()=>{
       if(this.moveCount == currentMoveCount){
         let moves = this.getAllMoves();
+        //TODO: TOT ASA
         this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
       }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
@@ -228,14 +254,17 @@ game.prototype.getAllMoves = function() {
         {
             for(let j = 0;j<8;j++)
             {
-                if(validMoveChecker[this.board[y][x]](flipTable(this.board), 7-x, 7-y, 7-j, 7-i))
+                let isValid = validMoveChecker[this.board[y][x]](flipTable(this.board), 7-x, 7-y, 7-j, 7-i, this.moves);
+                if(isValid != false)
                 {
                     let tempBoard = flipTable(JSON.parse(JSON.stringify(this.board)));
                     tempBoard[7-i][7-j] = tempBoard[7-y][7-x];
                     tempBoard[7-y][7-x] = empty;
+                    if(isValid == 'passant')
+                      tempBoard[7-y][7-j] = empty
                     if(isSah(tempBoard) != colorOfPiece(this.board[y][x]))
                       possibleMoves.push({fx:x,fy:y,tx:j,ty:i});
-                  }
+                }
             }
         }
       }
@@ -245,11 +274,14 @@ game.prototype.getAllMoves = function() {
         {
             for(let j = 0;j<8;j++)
             {
-              if(validMoveChecker[this.board[y][x]](this.board, x, y, j, i))
+              let isValid = validMoveChecker[this.board[y][x]](this.board, x, y, j, i, this.moves)
+              if(isValid != false)
               {
                     let tempBoard = JSON.parse(JSON.stringify(this.board));
                     tempBoard[i][j] = tempBoard[y][x];
                     tempBoard[y][x] = empty;
+                    if(isValid == 'passant')
+                      tempBoard[y][j] = empty
                     if(!isSah(tempBoard))
                         possibleMoves.push({fx:7-x,fy:7-y,tx:7-j,ty:7-i});
                }
@@ -289,18 +321,23 @@ game.prototype.isValidMove = function(con, move) {
     let technicallyValid = false;
     if(isPlayerA)
     {
-      let technicallyValid = validMoveChecker[newBoard[fy][fx]](flipTable(newBoard), 7-fx,7-fy,7-tx,7-ty);
+      let technicallyValid = validMoveChecker[newBoard[fy][fx]](flipTable(newBoard), 7-fx,7-fy,7-tx,7-ty, this.moves);
       newBoard[ty][tx] = newBoard[fy][fx];
       newBoard[fy][fx] = empty;
-      return technicallyValid && isSah(newBoard)!='w';
+      if(technicallyValid == 'passant')
+        newBoard[fy][tx] = empty
+      return (technicallyValid != false && isSah(newBoard)!='w')?technicallyValid:false;
     }
-    technicallyValid = validMoveChecker[newBoard[fy][fx]](newBoard, fx, fy, tx, ty);
+    technicallyValid = validMoveChecker[newBoard[fy][fx]](newBoard, fx, fy, tx, ty, this.moves);
     newBoard[ty][tx] = newBoard[fy][fx];
     newBoard[fy][fx] = empty;
-    return technicallyValid && isSah(newBoard)!='b';
-  };
+    console.log(technicallyValid)
+    if(technicallyValid == 'passant')
+        newBoard[fy][tx] = empty
+    return (technicallyValid != false && isSah(newBoard)!='b')?technicallyValid:false;
+};
 
-game.prototype.performMove = function(con, move) {
+game.prototype.performMove = function(con, move, special) {
     let isPlayerA = con==this.playerA;
     if(move!=null){
       let fx = move['fx'];
@@ -317,7 +354,22 @@ game.prototype.performMove = function(con, move) {
 
       this.board[ty][tx] = this.board[fy][fx];
       this.board[fy][fx] = empty;
-      this.last_move = {fx:fx,fy:fy,tx:tx,ty:ty};
+      console.log(special)
+      if(special == 'passant')
+      {
+        this.board[fy][tx] = empty;
+        console.log("removing")
+      }
+      else if(special == 'rocada') {
+        let dir = (fx>tx)?-1:1;
+        this.board[ty][tx-dir] = this.board[ty][tx+dir]
+        this.board[ty][tx+dir] = empty;
+      }
+      
+      this.moves.push({fx:fx,fy:fy,tx:tx,ty:ty});
+      let temp = this.moves[0]
+      this.moves[0] = this.moves[this.moves.length-1]
+      this.moves[this.moves.length-1] = temp
     }
 
     if(isPlayerA)
@@ -333,6 +385,7 @@ game.prototype.performMove = function(con, move) {
       if(this.moveCount == currentMoveCount){
         let moves = this.getAllMoves();
         console.log(moves[Math.floor(Math.random()*moves.length)]);
+        //TODO: Could be a bug here gen sa faci en passant fara sa iei piesa
         this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
       }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
@@ -381,11 +434,12 @@ game.prototype.getState = function(con) {
     isSah: this.chess,
     isCheckMate: this.isCheckMate(),
     moveCount:this.moveCount,
-    last_move: (this.playerA==con || this.last_move==null)?this.last_move:{
-      fx:7-this.last_move.fx,
-      fy:7-this.last_move.fy,
-      tx:7-this.last_move.tx,
-      ty:7-this.last_move.ty,
+    moves: this.moves,
+    last_move: (this.playerA==con || this.moves.length==0)?this.moves[0]:{
+      fx:7-this.moves[0].fx,
+      fy:7-this.moves[0].fy,
+      tx:7-this.moves[0].tx,
+      ty:7-this.moves[0].ty,
     }};
 }
 
