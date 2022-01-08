@@ -1,7 +1,7 @@
 const websocket = require("ws");
 
 const share = require('./public/javascripts/share.js')
-
+const gameStatus = require('./statTracker.js')
 const game = function(gameID) {
   this.playerA = null;
   this.playerB = null;
@@ -22,6 +22,7 @@ const game = function(gameID) {
   this.moveCount = 0;
   this.chess = null;
   this.moves = [];
+  this.isOn = false;
 };
 
 game.prototype.hasTwoConnectedPlayers = function() {
@@ -43,14 +44,19 @@ game.prototype.addPlayer = function(p) {
     this.currentMove = this.playerA;
     this.last_turn_time = Date.now();
     this.playerB = p;
+    this.isOn = true;
     let currentMoveCount = this.moveCount;
     setTimeout(()=>{
-      if(this.moveCount == currentMoveCount){
+      if(this.moveCount == currentMoveCount && this.isOn){
         let moves = this.getAllMoves();
         //TODO: TOT ASA
+        if(this.currentMove == this.playerA)
+          this.extraTimeA++;
+        else
+          this.extraTimeB++;
         this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
       }
-    }, (25 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
+    }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
     return "Black";
   }
 };
@@ -189,12 +195,16 @@ game.prototype.performMove = function(con, move, special) {
 
     let currentMoveCount = this.moveCount;
     setTimeout(()=>{
-      if(this.moveCount == currentMoveCount){
+      if(this.moveCount == currentMoveCount && this.isOn){
         let moves = this.getAllMoves();
         //TODO: Could be a bug here gen sa faci en passant fara sa iei piesa
+        if(this.currentMove == this.playerA)
+          this.extraTimeA++;
+        else
+          this.extraTimeB++;
         this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
       }
-    }, (25 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
+    }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
 
     this.chess = share.isSah(this.board);
     if(this.playerA != null)
@@ -204,7 +214,7 @@ game.prototype.performMove = function(con, move, special) {
     if(this.isCheckMate()==true) this.close();
 };
 
-game.prototype.close = function() {
+game.prototype.close = function(reason) {
   try {
     this.playerA.close();
     this.playerA = null;
@@ -218,6 +228,9 @@ game.prototype.close = function() {
   } catch (e) {
     console.log("Player B closing: " + e);
   }
+  this.isOn = false;
+  if(reason != 'aborted')
+  gameStatus.gamesCompleted++
 };
 
 game.prototype.isCheckMate = function(){
@@ -234,7 +247,7 @@ game.prototype.getBoard = function(con){
 game.prototype.getState = function(con) {
   return {board:this.getBoard(con),
     yourTurn: this.currentMove==con,
-    seconds: 25 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB),
+    seconds: 5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB),
     last_turn_time:this.last_turn_time,
     started: this.playerB!=null,
     isSah: this.chess,

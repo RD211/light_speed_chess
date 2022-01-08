@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splash</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+</head>
+<style>
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.title{
+    color: #009fda;
+    font-family: 'Roboto';
+}
+.play_button{
+    background-color:#009fda;
+    color:white;
+    font-family: 'Roboto';
+}
+.ewi_1{
+  margin: 0;
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  text-align: center;
+}
+.library{
+  margin: 0;
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  -ms-transform: translate(-50%, -0%);
+  transform: translate(-50%, -0%);
+  text-align: center;
+}
+.ewi_2{
+  margin: 0;
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+  text-align: center;
+}
+.stats
+{
+    margin: 0;
+    position: absolute;
+    left:0%;
+    top:0%;
+    text-align: center;
+    color: #009fda;
+}
+</style>
+<body>
+    <h4><%= gamesInitialized %> 
+        <%if (gamesInitialized != 1) { %>
+            games
+        <% } else { %>
+            game
+        <% } %>
+        initialized, 
+        <%= gamesCompleted %>
+        completed,
+        <%= gamesAborted %>
+        aborted
+    </h4>
+    <div class = "center" text>
+        <img src = "images/logo.png" width = 300, height =300/>
+        <h1 class = "title">Lightspeed Chess</h1>
+        <form action="/play" method="get">
+            <button type="submit" class = "play_button">
+                <h2>&nbsp&nbsp&nbsp&nbsp&nbsp&nbspPlay&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</h2>
+            </button>
+        </form>
+    </div>
+    <div class = "ewi_1">
+        <img src = "images/EWI_MvdV.png" width = 167, height =230/>
+    </div>
+    <div class = "library">
+        <img src = "images/delft_library_2.png" width = 381, height = 146>
+    </div>
+    <div class = "ewi_2">
+        <img src = "images/EWI_MvdV.png" width = 167, height =230/>
+    </div>
+</body>
+</html>

@@ -106,14 +106,12 @@ setInterval(()=>{
         if(myTurn)
         {
             new Audio("../sounds/tock.wav").play();
-
-            //Aici trebuia sa fie seconds in loc de 0 dar din ceva motiv asta merge? nu inteleg
-            document.getElementById("info_you").innerHTML = Math.ceil((5-(Date.now()-last_turn_time)/1000)).toString();
+            document.getElementById("info_you").innerHTML = Math.ceil((seconds-(Date.now()-last_turn_time)/1000)).toString();
             document.getElementById("info_him").innerHTML = "";
         }
         else
         {
-            document.getElementById("info_him").innerHTML = Math.ceil((5-(Date.now()-last_turn_time)/1000)).toString();
+            document.getElementById("info_him").innerHTML = Math.ceil((seconds-(Date.now()-last_turn_time)/1000)).toString();
             document.getElementById("info_you").innerHTML = "";
         }
     }

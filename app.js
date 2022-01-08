@@ -72,7 +72,7 @@ wss.on("connection", function connection(ws) {
     if (code == 1001) {
       const gameObj = websockets[con["id"]];
       gameStatus.gamesAborted++;
-      gameObj.close();
+      gameObj.close('aborted');
     }
   });
 });
