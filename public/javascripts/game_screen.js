@@ -1,26 +1,11 @@
-//#region Constants
-const wPieton = 0;
-const wCal = 1;
-const wTurn = 2;
-const wRege = 3;
-const wRegina = 4;
-const wNebun = 5;
-const bPieton = 6;
-const bCal = 7;
-const bTurn = 8;
-const bRege = 9;
-const bRegina = 10;
-const bNebun = 11;
-const empty = 12;
-
-
 function createImage(src)
 {
   let a = new Image();
   a.src = src;
   return a;
 };
-export let pieceToImage = [    
+
+let pieceToImage = [    
     createImage("../images/w/pieton.png"),
     createImage("../images/w/cal.png"),
     createImage("../images/w/turn.png"),
@@ -35,177 +20,6 @@ export let pieceToImage = [
     createImage("../images/b/nebun.png"),
     createImage("../images/empty.png"),
 ]
-
-function colorOfPiece(piece)
-{
-  return piece<=5?'w':(piece == empty)?null:'b';
-}
-//#endregion
-
-// We consider every move as being from a black object(top of board)
-let checkPawn = function(board, fx, fy, tx, ty, moves){
-  if(fy>=ty) return false;
-  let dest = board[ty][tx];
-  let colorFrom = colorOfPiece(board[fy][fx]);
-  let colorTo = colorOfPiece(board[ty][tx]);
-  if(board[fy][fx]==empty)  return false;
-  if(colorTo == colorFrom) return false;
-
-  if(fx==tx)
-  {
-    if(ty-fy==1 && dest == empty)
-      return true;
-    if(ty-fy==2 && fy==1 && dest == empty && board[fy+1][tx] == empty)
-      return true;
-  }
-  else if(Math.abs(fx-tx)==1)
-  {
-    if(ty-fy==1 && dest != empty)
-      return true;
-    if(ty-fy==1 && typeof moves !== 'undefined' && moves.length>0){
-      let move = moves[0]
-      if(colorFrom == 'w') move = {fx:7-move.fx, fy: 7-move.fy, tx: 7-move.tx, ty: 7-move.ty}
-      if(move.fy == ty+1 && move.fx == tx && 
-      (board[move.ty][move.tx] == wPieton ||
-        board[move.ty][move.tx] == bPieton) && 
-        colorOfPiece(board[move.ty][move.tx])!=colorFrom)
-        return true; //change to string 'en pessant'; also check because it doesnt work
-    }
-  }
-  return false;
-};
-
-
-let checkCal = function(board, fx, fy, tx, ty, moves){
-  let colorFrom = colorOfPiece(board[fy][fx]);
-  let colorTo = colorOfPiece(board[ty][tx]);
-  if(board[fy][fx] == empty)  return false;
-  if(colorTo == colorFrom) return false;
-  let dx = Math.abs(fx-tx);
-  let dy = Math.abs(fy-ty);
-  return JSON.stringify([dx,dy].sort()) == JSON.stringify([1,2]);
-};
-
-let checkNebun = function(board, fx, fy, tx, ty, moves){
-  let colorFrom = colorOfPiece(board[fy][fx]);
-  let colorTo = colorOfPiece(board[ty][tx]);
-  if(board[fy][fx] == empty)  return false;
-  if(colorTo == colorFrom) return false;
-  if(Math.abs(fx-tx)!=Math.abs(ty-fy)) return false;
-  let addX = tx>fx?1:-1;
-  let addY = ty>fy?1:-1;
-  for(let i = 1; fx+i*addX != tx;i++)
-  {
-    if(board[fy+i*addY][fx+i*addX] != empty)
-      return false;
-  }
-  return true;
-};
-
-let checkTura = function(board, fx, fy, tx, ty, moves){
-  let colorFrom = colorOfPiece(board[fy][fx]);
-  let colorTo = colorOfPiece(board[ty][tx]);
-  if(board[fy][fx] == empty)  return false;
-  if(colorTo == colorFrom) return false;
-  if(Math.abs(fx-tx)!=0 &&
-     Math.abs(ty-fy) != 0) return false;
-  let addX = tx>fx?1:tx<fx?-1:0;
-  let addY = ty>fy?1:ty<fy?-1:0;
-  for(let i = 1; fx+i*addX != tx || fy+i*addY != ty;i++)
-  {
-    if(board[fy+i*addY][fx+i*addX] != empty)
-      return false;
-  }
-  return true;
-};
-let checkRegina = function(board, fx, fy, tx, ty, moves) {
-  return checkNebun(board,fx,fy,tx,ty) || checkTura(board,fx,fy,tx,ty);
-};
-
-let checkKing = function(board, fx,fy,tx,ty,moves) {
-  let colorFrom = colorOfPiece(board[fy][fx]);
-  let colorTo = colorOfPiece(board[ty][tx]);
-  if(board[fy][fx] == empty)  return false;
-  if(colorTo == colorFrom) return false;
-
-  //TODO: MUST CHECK IF KING EVER MOVED OR ROOK
-  if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)<=3 && Math.abs(fx-tx)>=2)
-  {
-    let direction = (fx>tx)?-1:1;
-    if(board[ty][fx+direction]!=empty) return false;
-    if(board[ty][fx+direction+direction]!=empty) return false;
-    if(direction + tx <= 7 && direction+tx >= 0)
-    {
-      if((board[ty][direction+tx] == wTurn ||
-        board[ty][direction+tx] == bTurn)&&
-        colorOfPiece(board[ty][direction+tx]) == colorFrom){
-          return true;
-        }
-    }
-  }
-  return Math.abs(fx-tx) <= 1 && Math.abs(fy-ty) <= 1;
-};
-let validMoveChecker = {
-  0: checkPawn,
-  1: checkCal,
-  2: checkTura,
-  3: checkKing,
-  4:checkRegina,
-  5: checkNebun,
-  6: checkPawn,
-  7: checkCal,
-  8: checkTura,
-  9: checkKing,
-  10:checkRegina,
-  11: checkNebun,
-  12: ()=>false,
-};
-function isSah(board) {
-
-    let whiteKingPos = null;
-    let blackKingPos = null;
-  
-    for(let y = 0;y<8;y++)
-    {
-      for(let x = 0;x<8;x++)
-      {
-        if(board[y][x]==wRege)
-          whiteKingPos = {x:x, y:y};
-        if(board[y][x]==bRege)
-          blackKingPos = {x:x, y:y};
-      }
-    }
-    for(let y = 0;y<8;y++)
-    {
-      for(let x = 0;x<8;x++)
-      {
-        let piece = board[y][x];
-        if(piece!=empty){
-          if(colorOfPiece(piece)=='w')
-          {
-            if(validMoveChecker[board[y][x]](flipTable(board),7-x,7-y,7-blackKingPos.x, 7-blackKingPos.y))
-            {
-              return 'b';
-            }
-          }
-          else
-          {
-            if(validMoveChecker[board[y][x]](board,x,y,whiteKingPos.x, whiteKingPos.y))
-            {
-              return 'w';
-            }
-          }
-        }
-      }
-    }
-    return null;
-  }
-  
-  //TODO:ADD MOVES SEND BETWEEN
-function flipTable(chessBoard){
-    let newBoard = JSON.parse(JSON.stringify(chessBoard));
-    return newBoard.map(row=>row.reverse()).reverse();
-  }
 
 let canvas = document.getElementById("chess_game");
 
@@ -226,7 +40,7 @@ function drawTable(chessBoard, isChess, possibleMoves, lastMove)
               ctx.fillStyle = "#66FF00";
               ctx.globalAlpha = 0.8;
             }
-            else if((chessBoard[i][j]==wRege && isChess=='w') || (chessBoard[i][j]==bRege && isChess == 'b')){
+            else if((chessBoard[i][j]==share.wRege && isChess=='w') || (chessBoard[i][j]==share.bRege && isChess == 'b')){
               ctx.fillStyle = "#F08080";
               ctx.globalAlpha = 0.8;
             }
@@ -238,7 +52,7 @@ function drawTable(chessBoard, isChess, possibleMoves, lastMove)
 
             ctx.fillRect(j*75, i*75, (j+1)*75, (i+1)*75);  
             ctx.globalAlpha = 1.0;
-            if(chessBoard[i][j]!=empty)
+            if(chessBoard[i][j]!=share.empty)
             ctx.drawImage(pieceToImage[chessBoard[i][j]], j*75, i*75+10);
         }
     }
@@ -362,13 +176,11 @@ canvas.addEventListener("click", (e)=>{
 
     canvasX = e.pageX - totalOffsetX+300;
     canvasY = e.pageY - totalOffsetY +300;
-    console.log(canvasX+" "+canvasY );
     let x = Math.floor(canvasX/75);
     let y = Math.floor(canvasY/75);
     if(onSelection)
     {
         onSelection = false;
-        console.log("sending");
         socket.send(JSON.stringify({
             'fx':from['x'],
             'fy':from['y'],
@@ -377,8 +189,8 @@ canvas.addEventListener("click", (e)=>{
         }));
         possibleMoves = [];
     }
-    else if((colorOfPiece(chessBoard[y][x]) == 'w' && amIWhite) ||
-    (colorOfPiece(chessBoard[y][x]) == 'b' && !amIWhite))
+    else if((share.colorOfPiece(chessBoard[y][x]) == 'w' && amIWhite) ||
+    (share.colorOfPiece(chessBoard[y][x]) == 'b' && !amIWhite))
     {
         possibleMoves = [];
         onSelection = true;
@@ -388,13 +200,12 @@ canvas.addEventListener("click", (e)=>{
             for(let j = 0;j<8;j++)
             {
 
-                if(validMoveChecker[chessBoard[y][x]](flipTable(chessBoard), 7-x, 7-y, 7-j, 7-i, allMoves))
+                if(share.validMoveChecker[chessBoard[y][x]](share.flipTable(chessBoard), 7-x, 7-y, 7-j, 7-i, allMoves)!=false)
                 {
-                    console.log("considering " +j+" "+i);
                     let tempBoard = JSON.parse(JSON.stringify(chessBoard));
                     tempBoard[i][j] = tempBoard[y][x];
-                    tempBoard[y][x] = empty;
-                    if(isSah(tempBoard) != colorOfPiece(chessBoard[y][x]))
+                    tempBoard[y][x] = share.empty;
+                    if(share.isSah(tempBoard) != share.colorOfPiece(chessBoard[y][x]))
                         possibleMoves.push({x:j,y:i});
                 }
             }
