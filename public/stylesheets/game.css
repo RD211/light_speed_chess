@@ -1,0 +1,65 @@
+.friendly_grave{
+  width: 300;
+  height: 300;
+  margin: 0;
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  text-align: center;
+  background-color: darkblue;
+}
+.enemy_grave{
+  width: 300;
+  height: 300;
+  margin: 0;
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  text-align: center;
+  background-color: whitesmoke;
+}
+.background_image{
+    opacity: 0.3;
+}
+#chess_game {
+    background-color: green;
+    color: green;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+     transform: translate(-50%, -50%);
+    text-align: center;
+}
+.h1{
+    font-family: 'Roboto';
+    font-weight: bold;
+}
+#info_you{
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    color:#009fda;
+}
+#info_him{
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    color:#009fda;
+}
+.info_you{
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    color:#009fda;
+}
+.info_him{
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    color:#009fda;
+}
+.board{
+    display:grid,
+}
