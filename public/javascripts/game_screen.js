@@ -27,6 +27,7 @@ function drawTable(chessBoard, isChess, possibleMoves, lastMove)
 {
     let canvas = document.getElementById("chess_game");
     let ctx = canvas.getContext("2d");
+
     for(let i = 0;i<8;i++)
     {
         for(let j=0;j<8;j++)
@@ -103,19 +104,28 @@ setInterval(()=>{
     }
     else
     {
+        console.log(seconds)
+        let secondsLeft = Math.ceil((seconds-(Date.now()-last_turn_time)/1000))
+        let minutesLeft = Math.floor(secondsLeft/60);
+        secondsLeft = secondsLeft%60;
         if(myTurn)
         {
-            new Audio("../sounds/tock.wav").play();
-            document.getElementById("info_you").innerHTML = Math.ceil((seconds-(Date.now()-last_turn_time)/1000)).toString();
+            document.getElementById("info_you").innerHTML = `<h1>Time left: ${minutesLeft<10?'0':''}${minutesLeft}:${secondsLeft<10?'0':''}${secondsLeft}</h1>`;
             document.getElementById("info_him").innerHTML = "";
         }
         else
         {
-            document.getElementById("info_him").innerHTML = Math.ceil((seconds-(Date.now()-last_turn_time)/1000)).toString();
+            document.getElementById("info_him").innerHTML = `<h1>Time left: ${minutesLeft<10?'0':''}${minutesLeft}:${secondsLeft<10?'0':''}${secondsLeft}</h1>`;
             document.getElementById("info_you").innerHTML = "";
         }
     }
-},500);
+},100);
+
+setInterval(()=>{
+    if(myTurn && started && !isCheckMate && !gameAborted)
+        new Audio("../sounds/tock.wav").play();
+
+},1000);
 
 let onSelection = false;
 let from = null;
@@ -176,7 +186,8 @@ canvas.addEventListener("click", (e)=>{
     canvasY = e.pageY - totalOffsetY +300;
     let x = Math.floor(canvasX/75);
     let y = Math.floor(canvasY/75);
-    if(onSelection)
+    if(onSelection && (share.colorOfPiece(chessBoard[y][x]) != 'w' && amIWhite) ||
+    (share.colorOfPiece(chessBoard[y][x]) != 'b' && !amIWhite))
     {
         onSelection = false;
         socket.send(JSON.stringify({

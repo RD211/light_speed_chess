@@ -40,7 +40,7 @@ exports.checkPawn = function(board, fx, fy, tx, ty, moves){
     if(ty-fy==1 && typeof moves !== 'undefined' && moves.length>0){
       let move = moves[0]
       if(colorFrom == 'w') move = {fx:7-move.fx, fy: 7-move.fy, tx: 7-move.tx, ty: 7-move.ty}
-      if(move.fy == ty+1 && move.fx == tx && 
+      if(move.fy == ty+1 && move.fx == tx && Math.abs(move.tx-fx)==1 && move.ty == fy &&
       (board[move.ty][move.tx] == exports.wPieton ||
         board[move.ty][move.tx] == exports.bPieton) && 
         exports.colorOfPiece(board[move.ty][move.tx])!=colorFrom)
@@ -102,7 +102,6 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
   if(board[fy][fx] == exports.empty)  return false;
   if(colorTo == colorFrom) return false;
 
-  //TODO: Fix some bugs uneori merge chiar si daca ai miscat regele si tura
   if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)==2)
   {
     if(moves.some(x=>x.piece == board[fy][fx])) return false;
@@ -114,11 +113,22 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
       if((board[ty][direction+tx] == exports.wTurn ||
         board[ty][direction+tx] == exports.bTurn)&&
         exports.colorOfPiece(board[ty][direction+tx]) == colorFrom){
+          for(let ii = 0;ii<moves.length;ii++)
+          {
+            if(moves[ii].tx==tx+direction && moves[ii].ty == ty)
+              return false;
+          }
+
           return 'rocadar';
         }
       if((board[ty][direction+direction+tx] == exports.wTurn ||
         board[ty][direction+direction+tx] == exports.bTurn)&&
         exports.colorOfPiece(board[ty][direction+direction+tx]) == colorFrom){
+          for(let ii = 0;ii<moves.length;ii++)
+          {
+            if(moves[ii].tx==tx+direction+direction && moves[ii].ty == ty)
+              return false;
+          }
           return 'rocadal';
         }
     }

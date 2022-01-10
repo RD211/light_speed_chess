@@ -49,12 +49,12 @@ game.prototype.addPlayer = function(p) {
     setTimeout(()=>{
       if(this.moveCount == currentMoveCount && this.isOn){
         let moves = this.getAllMoves();
-        //TODO: TOT ASA
         if(this.currentMove == this.playerA)
           this.extraTimeA++;
         else
           this.extraTimeB++;
-        this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
+          let move = moves[Math.floor(Math.random()*moves.length)];
+          this.performMove(this.currentMove, move, this.isValidMove(move));      
       }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
     return "Black";
@@ -195,7 +195,6 @@ game.prototype.performMove = function(con, move, special) {
       this.currentMove = this.playerB;
     else
       this.currentMove = this.playerA;
-    this.last_turn_time = Date.now();
 
     this.moveCount++;
 
@@ -203,16 +202,17 @@ game.prototype.performMove = function(con, move, special) {
     setTimeout(()=>{
       if(this.moveCount == currentMoveCount && this.isOn){
         let moves = this.getAllMoves();
-        //TODO: Could be a bug here gen sa faci en passant fara sa iei piesa
         if(this.currentMove == this.playerA)
           this.extraTimeA++;
         else
           this.extraTimeB++;
-        this.performMove(this.currentMove,moves[Math.floor(Math.random()*moves.length)]);
+        let move = moves[Math.floor(Math.random()*moves.length)];
+        this.performMove(this.currentMove, move, this.isValidMove(move));
       }
     }, (5 + (this.currentMove==this.playerA?this.extraTimeA:this.extraTimeB))*1000);
-
+    this.last_turn_time = Date.now();
     this.chess = share.isSah(this.board);
+    
     if(this.playerA != null)
     this.playerA.send(JSON.stringify(this.getState(this.playerA)))
     if(this.playerB != null)
