@@ -13,6 +13,22 @@ exports.bRegina = 10;
 exports.bNebun = 11;
 exports.empty = 12;
 
+exports.pieceNumToString = {
+  0:'wPieton',
+  1:'wCal',
+  2:'wTurn',
+  3:'wRege',
+  4:'wRegina',
+  5:'wNebun',
+  6:'bPieton',
+  7:'bCal',
+  8:'bTurn',
+  9:'bRege',
+  10:'bRegina',
+  11:'bNebun',
+  12:'empty'
+}
+
 exports.colorOfPiece = function (piece)
 {
   return piece<=5?'w':(piece == exports.empty)?null:'b';

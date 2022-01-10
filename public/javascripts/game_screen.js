@@ -26,35 +26,26 @@ let canvas = document.getElementById("chess_game");
 function drawTable(chessBoard, isChess, possibleMoves, lastMove)
 {
     let canvas = document.getElementById("chess_game");
-    let ctx = canvas.getContext("2d");
 
     for(let i = 0;i<8;i++)
     {
-        for(let j=0;j<8;j++)
+        for(let j = 0;j<8;j++)
         {
-            ctx.fillStyle = (i+j)%2==0?"#000fda":"#009fda";
-            ctx.fillRect(j*75, i*75, (j+1)*75, (i+1)*75);
-
+            let element = document.getElementsByClassName(`${i}x${j}`)[0];
+            let newClassName = `${i}x${j} ${element.className.includes('white')?'white':'blue'} ${share.pieceNumToString[chessBoard[i][j]]}`;
             if(possibleMoves.some((move)=>{
-              return move.x==j&&move.y==i;
-            })){
-              ctx.fillStyle = "#66FF00";
-              ctx.globalAlpha = 0.8;
-            }
-            else if((chessBoard[i][j]==share.wRege && isChess=='w') || (chessBoard[i][j]==share.bRege && isChess == 'b')){
-              ctx.fillStyle = "#F08080";
-              ctx.globalAlpha = 0.8;
-            }
-            else if(lastMove != null &&((i == lastMove.fy && j == lastMove.fx) ||(i == lastMove.ty && j == lastMove.tx))){
-              ctx.fillStyle = "#FED8B1";
-              ctx.globalAlpha = 0.8;
-            }
-            
-
-            ctx.fillRect(j*75, i*75, (j+1)*75, (i+1)*75);  
-            ctx.globalAlpha = 1.0;
-            if(chessBoard[i][j]!=share.empty)
-            ctx.drawImage(pieceToImage[chessBoard[i][j]], j*75, i*75+10);
+                return move.x==j&&move.y==i;
+              })){
+                newClassName += " green";
+              }
+              else if((chessBoard[i][j]==share.wRege && isChess=='w') || (chessBoard[i][j]==share.bRege && isChess == 'b')){
+                newClassName += " check";
+              }
+              else if(lastMove != null &&((i == lastMove.fy && j == lastMove.fx) ||(i == lastMove.ty && j == lastMove.tx))){
+                newClassName += " lastmove";
+              }
+              console.log(newClassName)
+            element.className = newClassName;
         }
     }
 }
@@ -168,24 +159,12 @@ socket.onclose = function () {
 };
 
 
-canvas.addEventListener("click", (e)=>{
+function onBoardClick(element) {
+    console.log("clicked"+element.className)
     if(!myTurn) return;
-    let totalOffsetX = 0;
-    let totalOffsetY = 0;
-    let canvasX = 0;
-    let canvasY = 0;
-    let currentElement = canvas;
 
-    do{
-        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
-        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
-    }
-    while(currentElement = currentElement.offsetParent)
-
-    canvasX = e.pageX - totalOffsetX+300;
-    canvasY = e.pageY - totalOffsetY +300;
-    let x = Math.floor(canvasX/75);
-    let y = Math.floor(canvasY/75);
+    let x = parseInt(element.className[2]);
+    let y = parseInt(element.className[0]);
     if(onSelection && (share.colorOfPiece(chessBoard[y][x]) != 'w' && amIWhite) ||
     (share.colorOfPiece(chessBoard[y][x]) != 'b' && !amIWhite))
     {
@@ -219,7 +198,6 @@ canvas.addEventListener("click", (e)=>{
                 }
             }
         }
-        console.log(possibleMoves);
         drawTable(chessBoard, isChess, possibleMoves, lastMove);
     }
-}, false);
+}

@@ -23,3 +23,175 @@
     right: 5%;
     color:#009fda;
 }
+.chessboard{
+    display:grid;
+    grid-template-columns: repeat(8, 75px);
+    grid-template-rows: repeat(8, 75px);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+     transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.white {
+    background-color: #85dbfa;
+}
+
+.blue{
+    background-color: #000fda;
+}
+
+.wPieton:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    background-image: url("../images/w/pieton.png");
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+}
+.bPieton:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/b/pieton.png");
+}
+
+
+.wCal:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/w/cal.png");
+}
+.bCal:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/b/cal.png");
+}
+
+.wTurn:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/w/turn.png");
+}
+.bTurn:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/b/turn.png");
+}
+
+.wRege:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/w/rege.png");
+}
+.bRege:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/b/rege.png");
+}
+
+.wRegina:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/w/regina.png");
+}
+.bRegina:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/b/regina.png");
+}
+
+.wNebun:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/w/nebun.png");
+}
+.bNebun:after{
+    pointer-events: none;
+    content:"";
+    width: 75px;
+    height: 75px;
+    top: 5px;
+    right: 0px;
+    position: relative;
+    display: inline-block;
+    background-image: url("../images/b/nebun.png");
+}
+
+.lastmove {
+    background-image: linear-gradient(hsla(30, 97%, 85%, 0.8), hsla(30, 97%, 85%, 0.8)); /* this is painted over the background-color */
+    background-repeat: no-repeat;
+}
+.check {
+    background-image: linear-gradient(hsla(0, 79%, 72%, 0.8), hsla(0, 79%, 72%, 0.8)); /* this is painted over the background-color */
+    background-repeat: no-repeat;
+}
+.green {
+    background-image: linear-gradient(hsla(96, 100%, 50%, 0.8), hsla(96, 100%, 50%, 0.8)); /* this is painted over the background-color */
+    background-repeat: no-repeat;
+}
