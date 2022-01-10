@@ -102,10 +102,11 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
   if(board[fy][fx] == exports.empty)  return false;
   if(colorTo == colorFrom) return false;
 
-  //TODO: MUST CHECK IF KING EVER MOVED OR ROOK
-  //Maybe some bugs
-  if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)<=3 && Math.abs(fx-tx)>=2)
+  //TODO: Fix some bugs uneori merge chiar si daca ai miscat regele si tura
+  if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)==2)
   {
+    console.log(moves)
+    if(moves.some(x=>x.piece == board[fy][fx])) return false;
     let direction = (fx>tx)?-1:1;
     if(board[ty][fx+direction]!=exports.empty) return false;
     if(board[ty][fx+direction+direction]!=exports.empty) return false;
@@ -114,7 +115,12 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
       if((board[ty][direction+tx] == exports.wTurn ||
         board[ty][direction+tx] == exports.bTurn)&&
         exports.colorOfPiece(board[ty][direction+tx]) == colorFrom){
-          return 'rocada';
+          return 'rocadar';
+        }
+      if((board[ty][direction+direction+tx] == exports.wTurn ||
+        board[ty][direction+direction+tx] == exports.bTurn)&&
+        exports.colorOfPiece(board[ty][direction+direction+tx]) == colorFrom){
+          return 'rocadal';
         }
     }
   }

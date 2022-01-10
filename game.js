@@ -168,18 +168,24 @@ game.prototype.performMove = function(con, move, special) {
         tx = 7-tx;
         ty = 7-ty;
       }
-
+      
+      let piece = this.board[fy][fx];
       this.board[ty][tx] = this.board[fy][fx];
       this.board[fy][fx] = share.empty;
       if(special == 'passant')
         this.board[fy][tx] = share.empty;
-      else if(special == 'rocada') {
+      else if(special == 'rocadar') {
         let dir = (fx>tx)?-1:1;
         this.board[ty][tx-dir] = this.board[ty][tx+dir]
         this.board[ty][tx+dir] = share.empty;
       }
+      else if(special == 'rocadal') {
+        let dir = (fx>tx)?-1:1;
+        this.board[ty][tx-dir] = this.board[ty][tx+dir+dir]
+        this.board[ty][tx+dir+dir] = share.empty;
+      }
       
-      this.moves.push({fx:fx,fy:fy,tx:tx,ty:ty});
+      this.moves.push({fx:fx,fy:fy,tx:tx,ty:ty,piece:piece});
       let temp = this.moves[0]
       this.moves[0] = this.moves[this.moves.length-1]
       this.moves[this.moves.length-1] = temp
