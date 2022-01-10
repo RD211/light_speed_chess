@@ -105,7 +105,6 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
   //TODO: Fix some bugs uneori merge chiar si daca ai miscat regele si tura
   if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)==2)
   {
-    console.log(moves)
     if(moves.some(x=>x.piece == board[fy][fx])) return false;
     let direction = (fx>tx)?-1:1;
     if(board[ty][fx+direction]!=exports.empty) return false;
