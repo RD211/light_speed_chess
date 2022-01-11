@@ -11,7 +11,7 @@ router.get("/play", function(req, res) {
 /* GET home page */
 router.get("/", function(req, res) {
   res.render("splash.ejs", {
-    currentGames: gameStatus.gamesInitialized - gameStatus.gamesCompleted - gameStatus.gamesAborted - 1,
+    currentGames: gameStatus.gamesInitialized - gameStatus.gamesCompleted - gameStatus.gamesAborted,
     gamesCompleted: gameStatus.gamesCompleted,
     gamesAborted: gameStatus.gamesAborted
   });
