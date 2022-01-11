@@ -23,7 +23,7 @@ function drawTable(chessBoard, isChess, possibleMoves, lastMove)
     }
 }
 
-const socket = new WebSocket("ws://localhost:7071");
+const socket = new WebSocket(location.origin.replace(/^http/, 'ws'));
 
 let last_turn_time = Date.now();
 let myTurn = false;
