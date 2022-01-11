@@ -38,10 +38,20 @@
 
 .white {
     background-color: #85dbfa;
+    transition: all .2s ease-in-out;
 }
 
 .blue{
     background-color: #000fda;
+    transition: all .2s ease-in-out;
+}
+
+.blue:hover{
+    transform: scale(1.1);
+}
+
+.white:hover{
+    transform: scale(1.1);
 }
 
 .wPieton:after{
@@ -194,4 +204,46 @@
 .green {
     background-image: linear-gradient(hsla(96, 100%, 50%, 0.8), hsla(96, 100%, 50%, 0.8)); /* this is painted over the background-color */
     background-repeat: no-repeat;
+}
+
+.play_button{
+    background-color:#009fda;
+    color:white;
+    font-family: 'Roboto';
+}
+.play_button:hover{
+  background-color:#4fc7f3;
+  color:white;
+  font-family: 'Roboto';
+}
+
+.play_button:active{
+  background-color:#2200ff;
+  color:white;
+  font-family: 'Roboto';
+}
+
+#stats{
+    position: absolute;
+    left:px;
+    top:0px;
+}
+
+.stats{
+    color:#009fda;
+    font-family: 'Roboto';
+}
+
+.stats::before{
+    content:"Time since start: ";
+}
+
+.time{
+    background-color:#2200ff;
+    color:white;
+    font-family: 'Roboto';
+}
+
+.time::before{
+    content:"Turn time left: ";
 }

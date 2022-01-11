@@ -37,6 +37,7 @@ let lastMove = null;
 let moveCount = 0;
 let amIWhite = false;
 let allMoves = [];
+let startOfGame = null;
 
 let gameFinishDisplayed = false;
 setInterval(()=>{
@@ -68,7 +69,7 @@ setInterval(()=>{
     
     else if(!started)
     {
-        document.getElementById("info_him").innerHTML = "<h1>Waiting for another player</h1>"
+        document.getElementById("info_him").innerHTML = "<h2>Waiting for another player</h2>"
         document.getElementById("info_you").innerHTML = ""
     }
     else
@@ -78,14 +79,21 @@ setInterval(()=>{
         secondsLeft = secondsLeft%60;
         if(myTurn)
         {
-            document.getElementById("info_you").innerHTML = `<h1>Time left: ${minutesLeft<10?'0':''}${minutesLeft}:${secondsLeft<10?'0':''}${secondsLeft}</h1>`;
+            document.getElementById("info_you").innerHTML = `<h1 class = "time">${minutesLeft<10?'0':''}${minutesLeft}:${secondsLeft<10?'0':''}${secondsLeft}</h1>`;
             document.getElementById("info_him").innerHTML = "";
         }
         else
         {
-            document.getElementById("info_him").innerHTML = `<h1>Time left: ${minutesLeft<10?'0':''}${minutesLeft}:${secondsLeft<10?'0':''}${secondsLeft}</h1>`;
+            document.getElementById("info_him").innerHTML = `<h1 class = "time">${minutesLeft<10?'0':''}${minutesLeft}:${secondsLeft<10?'0':''}${secondsLeft}</h1>`;
             document.getElementById("info_you").innerHTML = "";
         }
+
+        let secondsPassed = Math.ceil((Date.now() - startOfGame)/1000);
+        let minutesPassed = Math.floor(secondsPassed/60);
+
+        secondsPassed %= 60;
+
+        document.getElementById("stats").innerHTML = `<h2 class = "stats">${minutesPassed<10?'0':''}${minutesPassed}:${secondsPassed<10?'0':''}${secondsPassed}<br>Current turn #: ${allMoves.length+1}</h2>`
     }
 },100);
 
@@ -110,6 +118,8 @@ socket.onmessage = function (event) {
     isCheckMate = data['isCheckMate'];
     lastMove = data['last_move'];
     allMoves = data['moves'];
+    if(startOfGame == null)
+        startOfGame = Date.now();
     if(isCheckMate && myTurn)
     {
       new Audio('../sounds/lose.wav').play();

@@ -68,7 +68,7 @@ wss.on("connection", function connection(ws) {
     if (code == 1001) {
       const gameObj = websockets[con["id"]];
       gameStatus.gamesAborted++;
-      console.log(`$Game(id: {gameObj.id}) aborted.`)
+      console.log(`Game(id: ${gameObj.id}) aborted.`)
       gameObj.close('aborted');
     }
   });

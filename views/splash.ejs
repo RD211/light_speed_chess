@@ -9,17 +9,17 @@
 </head>
 <link rel="stylesheet" href="./stylesheets/splash.css">
 <body>
-    <h4><%= gamesInitialized %> 
-        <%if (gamesInitialized != 1) { %>
-            games
-        <% } else { %>
-            game
-        <% } %>
-        initialized, 
+    <h4>
+        Games online: 
+        <%= currentGames %> 
+    </h4>
+    <h4>
+        Completed games: 
         <%= gamesCompleted %>
-        completed,
+    </h4>
+    <h4>
+        Games aborted: 
         <%= gamesAborted %>
-        aborted
     </h4>
     <div class = "center" text>
         <img src = "images/logo.png" width = 300, height =300/>
