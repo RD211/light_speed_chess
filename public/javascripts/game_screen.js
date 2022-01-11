@@ -18,7 +18,6 @@ function drawTable(chessBoard, isChess, possibleMoves, lastMove)
               else if(lastMove != null &&((i == lastMove.fy && j == lastMove.fx) ||(i == lastMove.ty && j == lastMove.tx))){
                 newClassName += " lastmove";
               }
-              console.log(newClassName)
             element.className = newClassName;
         }
     }
@@ -38,9 +37,13 @@ let lastMove = null;
 let moveCount = 0;
 let amIWhite = false;
 let allMoves = [];
+
+let gameFinishDisplayed = false;
 setInterval(()=>{
+    if(gameFinishDisplayed) return;
     if(isCheckMate)
     {
+        gameFinishDisplayed = true;
         if(myTurn)
             document.getElementById("info_him").innerHTML = `<h1>Game lost.</h1><form action="/play" method="get">
             <button type="submit" class = "play_button">
@@ -55,6 +58,7 @@ setInterval(()=>{
         </form>`
     }
     else if(gameAborted){
+        gameFinishDisplayed = true;
         document.getElementById("info_him").innerHTML = `<h1>Game aborted.</h1><form action="/play" method="get">
         <button type="submit" class = "play_button">
             <h2>&nbsp&nbsp&nbsp&nbsp&nbsp&nbspPlay&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</h2>
@@ -69,7 +73,6 @@ setInterval(()=>{
     }
     else
     {
-        console.log(seconds)
         let secondsLeft = Math.ceil((seconds-(Date.now()-last_turn_time)/1000))
         let minutesLeft = Math.floor(secondsLeft/60);
         secondsLeft = secondsLeft%60;
@@ -129,12 +132,10 @@ socket.onopen = function () {
 };
 socket.onclose = function () {
     gameAborted = true;
-    console.log("aborteeeeeddd");
 };
 
 
 function onBoardClick(element) {
-    console.log("clicked"+element.className)
     if(!myTurn) return;
 
     let x = parseInt(element.className[2]);
