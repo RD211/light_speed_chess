@@ -34,6 +34,8 @@ exports.colorOfPiece = function (piece)
   return piece<=5?'w':(piece == exports.empty)?null:'b';
 }
 
+//TODO: for some reason white king in chess when done by a black pawn
+// doesnt care and can do normal moves
 exports.checkPawn = function(board, fx, fy, tx, ty, moves){
   if(fy>=ty) return false;
   let dest = board[ty][tx];
@@ -59,8 +61,9 @@ exports.checkPawn = function(board, fx, fy, tx, ty, moves){
       if(move.fy == ty+1 && move.fx == tx && Math.abs(move.tx-fx)==1 && move.ty == fy &&
       (board[move.ty][move.tx] == exports.wPieton ||
         board[move.ty][move.tx] == exports.bPieton) && 
-        exports.colorOfPiece(board[move.ty][move.tx])!=colorFrom)
+        exports.colorOfPiece(board[move.ty][move.tx])!=colorFrom){
         return 'passant';
+        }
     }
   }
   return false;
@@ -97,8 +100,8 @@ exports.checkTura = function(board, fx, fy, tx, ty, moves){
   let colorTo = exports.colorOfPiece(board[ty][tx]);
   if(board[fy][fx] == exports.empty)  return false;
   if(colorTo == colorFrom) return false;
-  if(Math.abs(fx-tx)!=0 &&
-     Math.abs(ty-fy) != 0) return false;
+  if(fx != tx && fy != ty) return false;
+  
   let addX = tx>fx?1:tx<fx?-1:0;
   let addY = ty>fy?1:ty<fy?-1:0;
   for(let i = 1; fx+i*addX != tx || fy+i*addY != ty;i++)
@@ -120,6 +123,7 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
 
   if(Math.abs(fy-ty)==0 && Math.abs(fx-tx)==2)
   {
+    if(typeof moves === 'undefined') moves = []
     if(moves.some(x=>x.piece == board[fy][fx])) return false;
     let direction = (fx>tx)?-1:1;
     if(board[ty][fx+direction]!=exports.empty) return false;
@@ -134,7 +138,6 @@ exports.checkKing = function(board, fx,fy,tx,ty,moves) {
             if(moves[ii].tx==tx+direction && moves[ii].ty == ty)
               return false;
           }
-
           return 'rocadar';
         }
       if((board[ty][direction+direction+tx] == exports.wTurn ||
@@ -183,6 +186,12 @@ exports.isSah = function(board) {
         blackKingPos = {x:x, y:y};
     }
   }
+  if(blackKingPos==null || whiteKingPos==null){ 
+    console.log("Something went extremely wrong.")
+    return 'bw'
+  }
+  let isBlackChess = false;
+  let isWhiteChess = false;
   for(let y = 0;y<8;y++)
   {
     for(let x = 0;x<8;x++)
@@ -193,20 +202,23 @@ exports.isSah = function(board) {
         {
           if(exports.validMoveChecker[board[y][x]](exports.flipTable(board),7-x,7-y,7-blackKingPos.x, 7-blackKingPos.y))
           {
-            return 'b';
+            isBlackChess = true;
           }
         }
         else
         {
           if(exports.validMoveChecker[board[y][x]](board,x,y,whiteKingPos.x, whiteKingPos.y))
           {
-            return 'w';
+            isWhiteChess = true;
           }
         }
       }
     }
   }
-  return null;
+  if(isWhiteChess && isBlackChess) return 'wb';
+  if(isWhiteChess) return 'w';
+  if(isBlackChess) return 'b';
+  return 'n';
 }
 
 

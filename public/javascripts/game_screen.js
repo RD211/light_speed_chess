@@ -1,31 +1,5 @@
-function createImage(src)
-{
-  let a = new Image();
-  a.src = src;
-  return a;
-};
-
-let pieceToImage = [    
-    createImage("../images/w/pieton.png"),
-    createImage("../images/w/cal.png"),
-    createImage("../images/w/turn.png"),
-    createImage("../images/w/rege.png"),
-    createImage("../images/w/regina.png"),
-    createImage("../images/w/nebun.png"),
-    createImage("../images/b/pieton.png"),
-    createImage("../images/b/cal.png"),
-    createImage("../images/b/turn.png"),
-    createImage("../images/b/rege.png"),
-    createImage("../images/b/regina.png"),
-    createImage("../images/b/nebun.png"),
-    createImage("../images/empty.png"),
-]
-
-let canvas = document.getElementById("chess_game");
-
 function drawTable(chessBoard, isChess, possibleMoves, lastMove)
 {
-    let canvas = document.getElementById("chess_game");
 
     for(let i = 0;i<8;i++)
     {
@@ -187,13 +161,26 @@ function onBoardClick(element) {
         {
             for(let j = 0;j<8;j++)
             {
-
-                if(share.validMoveChecker[chessBoard[y][x]](share.flipTable(chessBoard), 7-x, 7-y, 7-j, 7-i, allMoves)!=false)
+                let isValid = share.validMoveChecker[chessBoard[y][x]](share.flipTable(chessBoard), 7-x, 7-y, 7-j, 7-i, allMoves);
+                if(isValid!=false)
                 {
                     let tempBoard = JSON.parse(JSON.stringify(chessBoard));
                     tempBoard[i][j] = tempBoard[y][x];
                     tempBoard[y][x] = share.empty;
-                    if(share.isSah(tempBoard) != share.colorOfPiece(chessBoard[y][x]))
+                    if(isValid == 'passant'){
+                        tempBoard[y][j] = share.empty
+                      }
+                      else if(isValid == 'rocadar') {
+                        let dir = (x>j)?-1:1;
+                        tempBoard[i][j-dir] = tempBoard[i][j+dir]
+                        tempBoard[i][j+dir] = share.empty;
+                      }
+                      else if(isValid == 'rocadal') {
+                        let dir = (x>j)?-1:1;
+                        tempBoard[i][j-dir] = tempBoard[i][j+dir+dir]
+                        tempBoard[i][j+dir+dir] = share.empty;
+                      }
+                    if(!(share.isSah(amIWhite?tempBoard:share.flipTable(tempBoard)).includes(share.colorOfPiece(chessBoard[y][x]))))
                         possibleMoves.push({x:j,y:i});
                 }
             }

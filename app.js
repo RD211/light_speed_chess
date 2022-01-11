@@ -11,13 +11,9 @@ app.use(express.static(__dirname + "/public"));
 http.createServer(app).listen(port);
 
 const indexRouter = require("./routes/index");
-const e = require("express");
-if(process.argv.length < 3) {
-  console.log("Error: expected a port as argument (eg. 'node app.js 3000').");
-  process.exit(1);
-}
 
 app.set("view engine", "ejs");
+
 app.use(express.static(__dirname + "/public"));
 
 app.get("/play", indexRouter);
@@ -27,7 +23,6 @@ const server = http.createServer(app);
 
 const wss = new websocket.Server({ server });
 
-
 let currentGame = new Game(gameStatus.gamesInitialized++);
 let connectionID = 0;
 const websockets = {};
@@ -36,16 +31,16 @@ wss.on("connection", function connection(ws) {
   const con = ws;
   con["id"] = connectionID++;
 
-  const playerType = currentGame.addPlayer(con);
+  const pType = currentGame.addPlayer(con);
   websockets[con["id"]] = currentGame;
 
   console.log(
-    `Player ${con["id"]} placed in game ${currentGame.id} as ${playerType}`
+    `Player ${con["id"]} placed in game ${currentGame.id} as ${pType}`
   );
 
-  currentGame.playerA.send(JSON.stringify(currentGame.getState(currentGame.playerA)))
-  if(currentGame.playerB!=null)
-  currentGame.playerB.send(JSON.stringify(currentGame.getState(currentGame.playerB)));
+  currentGame.playerWhite.send(JSON.stringify(currentGame.getState(currentGame.playerWhite)))
+  if(currentGame.playerBlack!=null)
+  currentGame.playerBlack.send(JSON.stringify(currentGame.getState(currentGame.playerBlack)));
 
   if (currentGame.hasTwoConnectedPlayers()) {
     currentGame = new Game(gameStatus.gamesInitialized++);
@@ -58,6 +53,7 @@ wss.on("connection", function connection(ws) {
     let isValid = gameObj.isValidMove(con,oMsg)
     if(isValid != false)
     {
+      console.log(`User(id: ${con['id']}) performing move in game(id: ${gameObj.id}) moving: x: ${oMsg.fx} y: ${oMsg.fy} to x: ${oMsg.tx} y: ${oMsg.ty}.`)
       gameObj.performMove(con, oMsg, isValid);
     }
     else
@@ -72,7 +68,7 @@ wss.on("connection", function connection(ws) {
     if (code == 1001) {
       const gameObj = websockets[con["id"]];
       gameStatus.gamesAborted++;
-      gameObj.close('aborted');
+      gameObj.close(`$Game(id: {gameObj.id}) aborted.`);
     }
   });
 });
