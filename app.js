@@ -4,7 +4,6 @@ const websocket = require("ws");
 const gameStatus = require("./statTracker");
 const Game = require("./game");
 
-//const port = process.argv[2];
 const port = process.env.PORT || process.argv[2];
 const app = express();
 
@@ -13,8 +12,6 @@ app.use(express.static(__dirname + "/public"));
 const indexRouter = require("./routes/index");
 
 app.set("view engine", "ejs");
-
-app.use(express.static(__dirname + "/public"));
 
 app.get("/play", indexRouter);
 app.get("/", indexRouter);
@@ -74,4 +71,4 @@ wss.on("connection", function connection(ws) {
   });
 });
 
-server.listen( process.env.PORT || process.argv[2]);
+server.listen(port);

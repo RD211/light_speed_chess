@@ -40,11 +40,19 @@
     background-color: #85dbfa;
     transition: all .2s ease-in-out;
 }
+@keyframes rotate {
+    to { transform: rotate(360deg) }
+}
 
+.waiting{
+    animation: rotate 5s ease infinite;
+}
 .blue{
-    background-color: #000fda;
+    background: #2f00ff;
     transition: all .2s ease-in-out;
 }
+
+
 
 .blue:hover{
     transform: scale(1.1);
@@ -65,6 +73,7 @@
     position: relative;
     display: inline-block;
 }
+
 .bPieton:after{
     pointer-events: none;
     content:"";
@@ -77,7 +86,6 @@
     background-image: url("../images/b/pieton.png");
 }
 
-
 .wCal:after{
     pointer-events: none;
     content:"";
@@ -89,6 +97,7 @@
     display: inline-block;
     background-image: url("../images/w/cal.png");
 }
+
 .bCal:after{
     pointer-events: none;
     content:"";
@@ -243,9 +252,10 @@
     color:white;
     font-family: 'Roboto';
 }
-
-.time::before{
-    content:"Turn time left: ";
+@media (min-width: 1350px) {
+    .time::before{
+        content:"Turn time left: ";
+    }
 }
 .blocker{
     margin: 0;

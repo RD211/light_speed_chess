@@ -34,8 +34,6 @@ exports.colorOfPiece = function (piece)
   return piece<=5?'w':(piece == exports.empty)?null:'b';
 }
 
-//TODO: for some reason white king in chess when done by a black pawn
-// doesnt care and can do normal moves
 exports.checkPawn = function(board, fx, fy, tx, ty, moves){
   if(fy>=ty) return false;
   let dest = board[ty][tx];

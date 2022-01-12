@@ -1,3 +1,7 @@
+document.querySelectorAll('.blue').forEach(function (ele) {
+    ele.className += " waiting";
+});
+
 function drawTable(chessBoard, isChess, possibleMoves, lastMove)
 {
 
@@ -6,7 +10,7 @@ function drawTable(chessBoard, isChess, possibleMoves, lastMove)
         for(let j = 0;j<8;j++)
         {
             let element = document.getElementsByClassName(`${i}x${j}`)[0];
-            let newClassName = `${i}x${j} ${element.className.includes('white')?'white':'blue'} ${share.pieceNumToString[chessBoard[i][j]]}`;
+            let newClassName = `${i}x${j} ${element.className.includes('white')?'white':'blue'}${element.className.includes('waiting')?' waiting':''} ${share.pieceNumToString[chessBoard[i][j]]}`;
             if(possibleMoves.some((move)=>{
                 return move.x==j&&move.y==i;
               })){
@@ -111,6 +115,13 @@ socket.onmessage = function (event) {
     let data = JSON.parse(event.data);
     last_turn_time = data['last_turn_time'];
     myTurn = data['yourTurn'];
+    if(started!=true && data['started']==true)
+    {
+        console.log("stopping");
+        document.querySelectorAll('.waiting').forEach(function (ele) {
+            ele.className = ele.className.replace(' waiting', '');
+        });
+    }
     started = data['started'];
     seconds = data['seconds'];
     isChess = data['isSah'];

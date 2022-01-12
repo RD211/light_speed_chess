@@ -33,7 +33,8 @@ game.prototype.addPlayer = function(p) {
   if (this.playerWhite == null) {
     this.playerWhite = p;
     return "White";
-  } else {
+  } 
+  else {
     this.currentMove = this.playerWhite;
     this.last_turn_time = Date.now();
     this.playerBlack = p;
