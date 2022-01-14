@@ -78,7 +78,7 @@ setInterval(()=>{
     }
     else
     {
-        let secondsLeft = Math.ceil((seconds-(Date.now()-last_turn_time)/1000))
+        let secondsLeft = Math.max(0,Math.ceil((seconds-(Date.now()-last_turn_time)/1000)))
         let minutesLeft = Math.floor(secondsLeft/60);
         secondsLeft = secondsLeft%60;
         if(myTurn)
