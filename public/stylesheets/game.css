@@ -40,6 +40,7 @@
     background-color: #85dbfa;
     transition: all .2s ease-in-out;
 }
+
 @keyframes rotate {
     to { transform: rotate(360deg) }
 }
@@ -47,6 +48,7 @@
 .waiting{
     animation: rotate 5s ease infinite;
 }
+
 .blue{
     background: #2f00ff;
     transition: all .2s ease-in-out;

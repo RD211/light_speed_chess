@@ -58,15 +58,16 @@
   transition-duration: 0.8s;
   transition-property: transform;
 }
+@keyframes rotate {
+  to { transform: rotate(360deg) }
+}
 
 .ewi_1:hover {
-  transform: rotate(360deg);
-  -webkit-transform: rotate(360deg);
+  animation: rotate 5s ease;
 }
 
 .ewi_2:hover {
-  transform: rotate(360deg);
-  -webkit-transform: rotate(360deg);
+  animation: rotate 5s ease;
 }
 
 
