@@ -8,23 +8,19 @@
 }
 .title{
     color: #009fda;
-    font-family: 'Roboto';
 }
 .play_button{
     background-color:#009fda;
     color:white;
-    font-family: 'Roboto';
 }
 .play_button:hover{
   background-color:#4fc7f3;
   color:white;
-  font-family: 'Roboto';
 }
 
 .play_button:active{
   background-color:#2200ff;
   color:white;
-  font-family: 'Roboto';
 }
 
 

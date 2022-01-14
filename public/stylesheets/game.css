@@ -7,7 +7,6 @@
     text-align: center;
 }
 .h1{
-    font-family: 'Roboto';
     font-weight: bold;
 }
 #info_you{
@@ -218,18 +217,15 @@
 .play_button{
     background-color:#009fda;
     color:white;
-    font-family: 'Roboto';
 }
 .play_button:hover{
   background-color:#4fc7f3;
   color:white;
-  font-family: 'Roboto';
 }
 
 .play_button:active{
   background-color:#2200ff;
   color:white;
-  font-family: 'Roboto';
 }
 
 #stats{
@@ -240,7 +236,6 @@
 
 .stats{
     color:#009fda;
-    font-family: 'Roboto';
 }
 
 .stats::before{
@@ -250,7 +245,6 @@
 .time{
     background-color:#2200ff;
     color:white;
-    font-family: 'Roboto';
 }
 @media (min-width: 1350px) {
     .time::before{
